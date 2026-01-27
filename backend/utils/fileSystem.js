@@ -62,11 +62,15 @@ async function getUserBooks(username) {
 
           // Check for cover image (jpg, png, or default)
           let coverUrl = null;
-          for (const ext of ['jpg', 'png', 'jpeg']) {
+          let isDefaultCover = false;
+          for (const ext of ['jpg', 'png', 'jpeg', 'webp', 'avif']) {
             const coverPath = path.join(bookPath, `cover.${ext}`);
             try {
               await fs.access(coverPath);
               coverUrl = `/api/books/${entry.name}/cover.${ext}`;
+              // Heuristic: if it's avif or webp, it MIGHT be the default. 
+              // To be more precise, we check if it matches the default extension we use.
+              isDefaultCover = (ext === 'avif' || ext === 'webp');
               break;
             } catch {
               // Cover doesn't exist, continue
@@ -83,6 +87,7 @@ async function getUserBooks(username) {
             name: entry.name,
             title,
             coverUrl,
+            isDefaultCover,
             updatedAt: stats.mtime
           });
         } catch {
@@ -254,7 +259,7 @@ async function saveBookCover(username, bookname, coverBuffer, coverExt) {
     await fs.mkdir(bookPath, { recursive: true });
 
     // Remove old cover images
-    for (const ext of ['jpg', 'png', 'jpeg']) {
+    for (const ext of ['jpg', 'png', 'jpeg', 'webp', 'avif']) {
       const oldCoverPath = path.join(bookPath, `cover.${ext}`);
       try {
         await fs.unlink(oldCoverPath);

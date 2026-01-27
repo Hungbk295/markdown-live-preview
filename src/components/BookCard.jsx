@@ -24,18 +24,25 @@ function BookCard({ book, editMode, onEdit, onDelete }) {
     }
   };
 
-  // Generate default cover if no cover image
+  // Render cover with title overlay
   const renderCover = () => {
     if (book.coverUrl) {
       return (
-        <img
-          src={book.coverUrl}
-          alt={book.title}
-          className="book-cover-image"
-        />
+        <div className="book-cover-wrapper">
+          <img
+            src={book.coverUrl}
+            alt={book.title}
+            className="book-cover-image"
+          />
+          {book.isDefaultCover && (
+            <div className="book-cover-overlay">
+              <span className="book-cover-title-on-image">{book.title}</span>
+            </div>
+          )}
+        </div>
       );
     } else {
-      // Default grey cover with title
+      // Default grey cover with title (legacy fallback)
       return (
         <div className="book-cover-default">
           <span className="book-cover-title">{book.title}</span>

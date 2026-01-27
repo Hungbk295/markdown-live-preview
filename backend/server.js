@@ -5,7 +5,7 @@ const path = require('path');
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(express.json({ limit: '10mb' })); // Allow larger markdown files
@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 if (process.env.NODE_ENV !== 'production') {
   app.use(
     cors({
-      origin: 'http://localhost:5173', // Vite dev server
+      origin: 'http://localhost:5174', // Vite dev server
       credentials: true
     })
   );

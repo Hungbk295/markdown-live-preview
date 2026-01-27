@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs').promises;
 const { requireAuth } = require('../middleware/auth');
 const { createBook, saveBookCover } = require('../utils/fileSystem');
 
@@ -90,6 +91,7 @@ router.post(
       // Prepare cover data if provided
       let coverBuffer = null;
       let coverExt = null;
+
       if (coverFile) {
         coverBuffer = coverFile.buffer;
         // Get extension from mimetype (e.g., image/jpeg -> jpg)
@@ -98,9 +100,24 @@ router.post(
           'image/jpg': 'jpg',
           'image/png': 'png',
           'image/gif': 'gif',
-          'image/webp': 'webp'
+          'image/webp': 'webp',
+          'image/avif': 'avif'
         };
         coverExt = mimeMap[coverFile.mimetype] || 'jpg';
+      } else {
+        // No cover uploaded, use default
+        try {
+          // Use path relative to this file (backend/routes/upload.js) -> backend/storage/default-cover.avif
+          const defaultCoverPath = path.join(__dirname, '../storage/default-cover.avif');
+
+          // Check if default cover exists
+          await fs.access(defaultCoverPath);
+          coverBuffer = await fs.readFile(defaultCoverPath);
+          coverExt = 'avif';
+        } catch (err) {
+          console.warn('Default cover image not found or not readable:', err.message);
+          // coverBuffer remains null, so no cover will be created
+        }
       }
 
       // Create the book
@@ -167,7 +184,8 @@ router.post(
         'image/jpg': 'jpg',
         'image/png': 'png',
         'image/gif': 'gif',
-        'image/webp': 'webp'
+        'image/webp': 'webp',
+        'image/avif': 'avif'
       };
       const coverExt = mimeMap[coverFile.mimetype] || 'jpg';
 
