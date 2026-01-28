@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const path = require('path');
 
@@ -21,9 +22,14 @@ if (process.env.NODE_ENV !== 'production') {
   );
 }
 
-// Session configuration
+// Session configuration with file store for persistence
 app.use(
   session({
+    store: new FileStore({
+      path: path.join(__dirname, 'sessions'), // Store sessions in backend/sessions
+      ttl: 86400, // 24 hours in seconds
+      retries: 0
+    }),
     secret: process.env.SESSION_SECRET || 'dev-secret-CHANGE-IN-PRODUCTION',
     resave: false,
     saveUninitialized: false,
@@ -80,7 +86,7 @@ server.on('error', (err) => {
     console.error(`Port ${PORT} is already in use.`);
     console.error(
       'Stop the other process (or change PORT) and retry. ' +
-        'Tip: `lsof -nP -iTCP:3003 -sTCP:LISTEN` then `kill <PID>`.'
+      'Tip: `lsof -nP -iTCP:3003 -sTCP:LISTEN` then `kill <PID>`.'
     );
     process.exit(1);
   }
