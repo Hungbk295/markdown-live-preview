@@ -93,33 +93,17 @@ function EditorPage() {
       <header className="editor-header">
         <div className="header-left">
           <button onClick={() => navigate('/library')} className="btn-back">
-            ← Back to Library
+            ←
           </button>
           <h1>{bookTitle}</h1>
-        </div>
-        <div className="header-right">
-          <div className="save-indicator">
-            {saveStatus === 'saving' && <span className="status-saving">Saving...</span>}
-            {saveStatus === 'saved' && <span className="status-saved">✓ Saved</span>}
-            {saveStatus === 'error' && <span className="status-error">Error saving</span>}
-          </div>
-
-          {/* Reading Mode Toggle */}
-          <button
-            onClick={() => setReadingMode(!readingMode)}
-            className="btn-toggle-mode"
-            title={readingMode ? 'Show Editor' : 'Hide Editor'}
-          >
-            {readingMode ? '📖 Reading' : '✏️ Editing'}
-          </button>
-
           {/* Theme Selector */}
           <div className="theme-selector">
             <button
               onClick={() => setShowThemeMenu(!showThemeMenu)}
               className="btn-theme"
             >
-              {availableThemes[theme].icon} {availableThemes[theme].name}
+              {availableThemes[theme].icon}{' '}
+              <span className="theme-name">{availableThemes[theme].name}</span>
             </button>
             {showThemeMenu && (
               <div className="theme-menu">
@@ -138,6 +122,22 @@ function EditorPage() {
               </div>
             )}
           </div>
+        </div>
+        <div className="header-right">
+          <div className="save-indicator">
+            {saveStatus === 'saving' && <span className="status-saving">Saving...</span>}
+            {saveStatus === 'saved' && <span className="status-saved">✓ Saved</span>}
+            {saveStatus === 'error' && <span className="status-error">Error saving</span>}
+          </div>
+
+          {/* Reading Mode Toggle */}
+          <button
+            onClick={() => setReadingMode(!readingMode)}
+            className="btn-toggle-mode"
+            title={readingMode ? 'Show Editor' : 'Hide Editor'}
+          >
+            {readingMode ? '📖 Reading' : '✏️ Editing'}
+          </button>
         </div>
       </header>
 
@@ -172,27 +172,45 @@ function EditorPage() {
           background: var(--header-bg, #f5f5f5);
           border-bottom: 1px solid var(--border-color, #ddd);
           flex-shrink: 0;
+          gap: 0.5rem;
         }
 
         .header-left {
           display: flex;
           align-items: center;
           gap: 1rem;
+          flex: 1;
+          min-width: 0;
         }
 
         .header-left h1 {
           margin: 0;
           font-size: 1.25rem;
           color: var(--text-color, #333);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .header-right {
           display: flex;
           align-items: center;
           gap: 1rem;
+          flex-shrink: 0;
         }
 
-        .btn-back, .btn-toggle-mode, .btn-theme {
+        .btn-back {
+          padding: 0.5rem 0.75rem;
+          font-size: 1.1rem;
+          background: var(--button-bg, #fff);
+          border: 1px solid var(--border-color, #ddd);
+          border-radius: 4px;
+          cursor: pointer;
+          color: var(--text-color, #333);
+          transition: all 0.2s;
+        }
+
+        .btn-toggle-mode, .btn-theme {
           padding: 0.5rem 1rem;
           background: var(--button-bg, #fff);
           border: 1px solid var(--border-color, #ddd);
@@ -250,6 +268,7 @@ function EditorPage() {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           z-index: 1000;
           min-width: 180px;
+          max-width: 250px;
         }
 
         .theme-menu button {
@@ -262,6 +281,7 @@ function EditorPage() {
           cursor: pointer;
           color: var(--text-color, #333);
           transition: background 0.2s;
+          white-space: nowrap;
         }
 
         .theme-menu button:hover {
@@ -678,6 +698,165 @@ function EditorPage() {
 
         [data-theme="catppuccin"] .markdown-body details summary:hover {
           color: #04a5e5 !important; /* Sky */
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .editor-header {
+            padding: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+          }
+
+          .header-left {
+            flex: 1 1 100%;
+            gap: 0.5rem;
+          }
+
+          .header-left h1 {
+            font-size: 1rem;
+          }
+
+          .header-right {
+            flex: 1 1 100%;
+            justify-content: space-between;
+            gap: 0.5rem;
+          }
+
+          .btn-back {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+          }
+
+          .btn-toggle-mode {
+            display: none;
+          }
+
+          .btn-theme {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+          }
+
+          .save-indicator {
+            font-size: 0.8rem;
+            min-width: 60px;
+          }
+
+          /* Hide theme name on mobile, only show icon */
+          .btn-theme .theme-name {
+            display: none;
+          }
+
+          /* Theme menu positioning on mobile */
+          .theme-menu {
+            min-width: 160px;
+            right: 0;
+          }
+
+          .theme-menu button {
+            padding: 0.65rem 0.85rem;
+            font-size: 0.9rem;
+          }
+
+          /* Reading mode preview - more padding on mobile */
+          .reading-preview {
+            padding: 2rem 1rem;
+          }
+
+          .preview-pane {
+            padding: 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .editor-header {
+            padding: 0.5rem;
+          }
+
+          .header-left h1 {
+            font-size: 0.9rem;
+          }
+
+          .btn-back,
+          .btn-toggle-mode,
+          .btn-theme {
+            padding: 0.35rem 0.5rem;
+            font-size: 0.8rem;
+          }
+
+          .save-indicator {
+            font-size: 0.75rem;
+            min-width: 50px;
+          }
+
+          .theme-menu {
+            min-width: 140px;
+          }
+
+          .theme-menu button {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.85rem;
+          }
+
+          .reading-preview {
+            padding: 1.5rem 0.75rem;
+          }
+
+          .preview-pane {
+            padding: 0.75rem;
+          }
+
+          /* Markdown body adjustments for mobile */
+          .markdown-body {
+            font-size: 15px !important;
+            line-height: 1.6 !important;
+          }
+
+          .markdown-body h1 {
+            font-size: 1.75rem !important;
+            margin-top: 1.5rem !important;
+            margin-bottom: 1rem !important;
+          }
+
+          .markdown-body h2 {
+            font-size: 1.5rem !important;
+            margin-top: 1.25rem !important;
+            margin-bottom: 0.75rem !important;
+          }
+
+          .markdown-body h3 {
+            font-size: 1.25rem !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.5rem !important;
+          }
+
+          .markdown-body h4,
+          .markdown-body h5,
+          .markdown-body h6 {
+            font-size: 1.1rem !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0.5rem !important;
+          }
+
+          .markdown-body pre {
+            font-size: 13px !important;
+            overflow-x: auto !important;
+          }
+
+          .markdown-body code {
+            font-size: 13px !important;
+          }
+
+          .markdown-body table {
+            font-size: 14px !important;
+            overflow-x: auto !important;
+            display: block !important;
+          }
+
+          .markdown-body img {
+            max-width: 100% !important;
+            height: auto !important;
+          }
         }
       `}</style>
     </div>

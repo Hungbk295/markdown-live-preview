@@ -323,6 +323,66 @@ function LoginPage() {
           --primary-color: #8839ef; /* Mauve */
           --primary-hover: #7c3aed;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .login-container {
+            padding: 1rem;
+          }
+
+          .login-box {
+            padding: 1.5rem;
+            max-width: 100%;
+          }
+
+          .login-box h1 {
+            font-size: 1.3rem;
+          }
+
+          .theme-selector-login {
+            top: 0.75rem;
+            right: 0.75rem;
+          }
+
+          .btn-theme-login {
+            width: 42px;
+            height: 42px;
+            font-size: 1.3rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .login-container {
+            padding: 0.5rem;
+          }
+
+          .login-box {
+            padding: 1.25rem;
+          }
+
+          .login-box h1 {
+            font-size: 1.2rem;
+          }
+
+          .login-box > p {
+            font-size: 0.85rem;
+          }
+
+          .theme-selector-login {
+            top: 0.5rem;
+            right: 0.5rem;
+          }
+
+          .btn-theme-login {
+            width: 38px;
+            height: 38px;
+            font-size: 1.2rem;
+          }
+
+          .login-hint {
+            font-size: 0.8rem;
+          }
+        }
       `}</style>
     </div>
   );

@@ -7,12 +7,15 @@ function SplitPane({ left, right }) {
   const dividerRef = useRef(null);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMove = (e) => {
       if (!isDragging || !containerRef.current) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const totalWidth = containerRect.width;
-      const offsetX = e.clientX - containerRect.left;
+
+      // Support both mouse and touch events
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const offsetX = clientX - containerRect.left;
 
       // Calculate new left width as percentage
       const minPercent = 10;
@@ -23,7 +26,7 @@ function SplitPane({ left, right }) {
       setLeftWidth(newLeftPercent);
     };
 
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       if (isDragging) {
         setIsDragging(false);
         document.body.style.cursor = 'default';
@@ -32,18 +35,27 @@ function SplitPane({ left, right }) {
     };
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      // Mouse events
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+
+      // Touch events
+      document.addEventListener('touchmove', handleMove, { passive: false });
+      document.addEventListener('touchend', handleEnd);
+
       document.body.style.userSelect = 'none';
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
     };
   }, [isDragging]);
 
-  const handleMouseDown = () => {
+  const handleStart = (e) => {
+    e.preventDefault();
     setIsDragging(true);
     document.body.style.cursor = 'col-resize';
   };
@@ -64,7 +76,8 @@ function SplitPane({ left, right }) {
       <div
         ref={dividerRef}
         className="split-divider"
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleStart}
+        onTouchStart={handleStart}
         onDoubleClick={handleDoubleClick}
       />
 
@@ -95,6 +108,9 @@ function SplitPane({ left, right }) {
           cursor: col-resize;
           transition: background 0.2s;
           flex-shrink: 0;
+          user-select: none;
+          -webkit-user-select: none;
+          touch-action: none;
         }
 
         .split-divider:hover {
@@ -104,6 +120,19 @@ function SplitPane({ left, right }) {
         [data-theme="dark"] .split-divider {
           --divider-color: #444;
           --divider-hover: #666;
+        }
+
+        /* Catppuccin theme divider */
+        [data-theme="catppuccin"] .split-divider {
+          --divider-color: #e0b8b0;
+          --divider-hover: #c97a68;
+        }
+
+        /* Mobile responsive - wider touch target */
+        @media (max-width: 768px) {
+          .split-divider {
+            width: 8px;
+          }
         }
       `}</style>
     </div>
