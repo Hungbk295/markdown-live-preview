@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 function BookCard({ book, editMode, onEdit, onDelete }) {
+
   const navigate = useNavigate();
 
   const handleCardClick = () => {
