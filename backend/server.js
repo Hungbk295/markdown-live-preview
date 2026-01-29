@@ -50,11 +50,13 @@ app.use(
 const authRoutes = require('./routes/auth');
 const booksRoutes = require('./routes/books');
 const uploadRoutes = require('./routes/upload');
+const foldersRoutes = require('./routes/folders');
 
 // Mount API routes
 app.use('/api', authRoutes);
 app.use('/api/books', booksRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/folders', foldersRoutes);
 
 // Serve static files from dist in production
 if (process.env.NODE_ENV === 'production') {

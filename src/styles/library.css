@@ -297,6 +297,169 @@
   background: var(--danger-hover, #c82333);
 }
 
+/* Move to Root Button */
+.btn-move-root {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--primary-color, #007bff);
+  color: white;
+}
+
+.btn-move-root:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+/* Create Folder Button */
+.btn-create-folder {
+  padding: 0.75rem 1.5rem;
+  border: 2px dashed var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--text-color, #333);
+}
+
+.btn-create-folder:hover {
+  border-color: var(--primary-color, #007bff);
+  color: var(--primary-color, #007bff);
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--surface-color, white);
+  border-bottom: 1px solid var(--border-color, #ddd);
+  font-size: 0.95rem;
+}
+
+.breadcrumb-item {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.breadcrumb-root {
+  color: var(--primary-color, #007bff);
+}
+
+.breadcrumb-root:hover {
+  background: var(--button-hover, #e9ecef);
+}
+
+.breadcrumb-root.drop-target {
+  background: var(--success-color, #28a745);
+  color: white;
+}
+
+.breadcrumb-separator {
+  margin: 0 0.25rem;
+  color: var(--text-secondary, #666);
+}
+
+.breadcrumb-current {
+  color: var(--text-color, #333);
+  font-weight: 500;
+  cursor: default;
+}
+
+/* Folder Card Styles */
+.folder-card {
+  background: var(--card-bg, white);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+}
+
+.folder-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.folder-card.drop-target {
+  border-color: var(--success-color, #28a745);
+  background: rgba(40, 167, 69, 0.1);
+  transform: scale(1.02);
+}
+
+.folder-icon-wrapper {
+  width: 100%;
+  aspect-ratio: 2/3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0ad4e 0%, #e67e22 100%);
+  position: relative;
+}
+
+.folder-icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.folder-icon svg {
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.folder-book-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.folder-info {
+  padding: 1rem;
+}
+
+.folder-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--text-color, #333);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Drag and Drop Styles */
+.book-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.book-card[draggable="true"] {
+  cursor: grab;
+}
+
+.book-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
 /* Dark Mode Variables */
 [data-theme="dark"] .library-page {
   --background-color: #1a1a1a;
