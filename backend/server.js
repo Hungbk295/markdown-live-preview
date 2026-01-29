@@ -8,6 +8,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
+// Trust proxy - IMPORTANT for HTTPS behind nginx/apache
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.json({ limit: '10mb' })); // Allow larger markdown files
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -35,12 +38,11 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      // Set to false to allow HTTP connections (no SSL required)
-      // If you add HTTPS in the future, change this to true
-      secure: false,
-      sameSite: 'lax', // 'lax' for better compatibility
+      secure: process.env.NODE_ENV === 'production', // HTTPS required in production
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-site HTTPS
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+    },
+    proxy: true // Trust the reverse proxy
   })
 );
 
