@@ -35,8 +35,10 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      // Set to false to allow HTTP connections (no SSL required)
+      // If you add HTTPS in the future, change this to true
+      secure: false,
+      sameSite: 'lax', // 'lax' for better compatibility
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
   })
