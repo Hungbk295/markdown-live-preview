@@ -8,7 +8,7 @@ import SplitPane from '../components/SplitPane';
 import api from '../services/api';
 
 function EditorPage() {
-  const { bookname } = useParams();
+  const { bookname, folder } = useParams();
   const navigate = useNavigate();
   const { theme, setTheme, availableThemes } = useTheme();
 
@@ -20,14 +20,26 @@ function EditorPage() {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const saveTimeoutRef = useRef(null);
 
+  // API path depends on whether book is in folder or not
+  const getApiPath = () => {
+    if (folder) {
+      return `/folders/${folder}/books/${bookname}`;
+    }
+    return `/books/${bookname}`;
+  };
+
   useEffect(() => {
     fetchBook();
-  }, [bookname]);
+  }, [bookname, folder]);
 
   const fetchBook = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/books/${bookname}`);
+      // For folder books, use folder API endpoint
+      const apiPath = folder
+        ? `/folders/${folder}/books/${bookname}`
+        : `/books/${bookname}`;
+      const response = await api.get(apiPath);
       setContent(response.data.content);
       setBookTitle(response.data.title);
     } catch (error) {
@@ -41,7 +53,11 @@ function EditorPage() {
 
   const saveBook = async (newContent) => {
     try {
-      await api.put(`/books/${bookname}`, { content: newContent });
+      // For folder books, we need different API path
+      const apiPath = folder
+        ? `/folders/${folder}/books/${bookname}`
+        : `/books/${bookname}`;
+      await api.put(apiPath, { content: newContent });
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus(''), 2000);
     } catch (error) {

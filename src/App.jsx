@@ -38,6 +38,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            {/* Route for books inside folders */}
+            <Route
+              path="/editor/:folder/:bookname"
+              element={
+                <ProtectedRoute>
+                  <EditorPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

@@ -114,6 +114,87 @@ router.get('/:foldername/books/:bookname/cover.:ext', async (req, res) => {
 });
 
 /**
+ * GET /api/folders/:foldername/books/:bookname
+ * Get content of a specific book in a folder
+ */
+router.get('/:foldername/books/:bookname', async (req, res) => {
+    try {
+        const username = req.session.user.username;
+        const { foldername, bookname } = req.params;
+        const sanitizedFolder = sanitizeBookName(foldername);
+        const sanitizedBook = sanitizeBookName(bookname);
+
+        const bookPath = path.join(
+            __dirname,
+            '../storage/books',
+            username,
+            sanitizedFolder,
+            sanitizedBook,
+            'content.md'
+        );
+
+        const content = await fs.readFile(bookPath, 'utf-8');
+        const title = sanitizedBook
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        res.json({
+            name: sanitizedBook,
+            content,
+            title,
+            folder: sanitizedFolder
+        });
+    } catch (error) {
+        console.error('Error getting book from folder:', error);
+        res.status(404).json({
+            error: 'Not Found',
+            message: 'Book not found in folder'
+        });
+    }
+});
+
+/**
+ * PUT /api/folders/:foldername/books/:bookname
+ * Update content of a book in a folder
+ */
+router.put('/:foldername/books/:bookname', async (req, res) => {
+    try {
+        const username = req.session.user.username;
+        const { foldername, bookname } = req.params;
+        const { content } = req.body;
+        const sanitizedFolder = sanitizeBookName(foldername);
+        const sanitizedBook = sanitizeBookName(bookname);
+
+        if (content === undefined) {
+            return res.status(400).json({
+                error: 'Bad Request',
+                message: 'Content is required'
+            });
+        }
+
+        const bookPath = path.join(
+            __dirname,
+            '../storage/books',
+            username,
+            sanitizedFolder,
+            sanitizedBook,
+            'content.md'
+        );
+
+        await fs.writeFile(bookPath, content, 'utf-8');
+
+        res.json({ success: true, name: sanitizedBook });
+    } catch (error) {
+        console.error('Error saving book in folder:', error);
+        res.status(500).json({
+            error: 'Server Error',
+            message: error.message || 'Failed to save book'
+        });
+    }
+});
+
+/**
  * DELETE /api/folders/:foldername
  * Delete a folder and all its contents
  */
