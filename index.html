@@ -1,60 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Markdown Book Library - Manage and edit your markdown books">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <title>Markdown Book Library</title>
 
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Markdown Book Library - Manage and edit your markdown books">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Markdown Book Library</title>
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-          sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        /* Prevent font scaling on iOS */
-        -webkit-text-size-adjust: 100%;
-        /* Better tap targets on mobile */
-        touch-action: manipulation;
-      }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      #app {
-        width: 100%;
-        height: 100vh;
-        overflow: hidden;
-      }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      /* Prevent font scaling on iOS */
+      -webkit-text-size-adjust: 100%;
+      /* Better tap targets on mobile */
+      touch-action: manipulation;
+    }
 
-      /* Improve touch targets on mobile */
-      @media (max-width: 768px) {
-        button, a, input[type="checkbox"], input[type="radio"] {
-          min-height: 44px;
-          min-width: 44px;
-        }
-      }
+    #app {
+      width: 100%;
+      min-height: 100vh;
+      overflow: auto;
+    }
 
-      /* Light mode variables */
-      :root {
-        --background-color: #ffffff;
-        --text-color: #333333;
-      }
+    /* Improve touch targets on mobile */
+    @media (max-width: 768px) {
 
-      /* Dark mode variables */
-      [data-theme="dark"] {
-        --background-color: #1a1a1a;
-        --text-color: #e0e0e0;
+      button,
+      a,
+      input[type="checkbox"],
+      input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
       }
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    }
+
+    /* Light mode variables */
+    :root {
+      --background-color: #ffffff;
+      --text-color: #333333;
+    }
+
+    /* Dark mode variables */
+    [data-theme="dark"] {
+      --background-color: #1a1a1a;
+      --text-color: #e0e0e0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
