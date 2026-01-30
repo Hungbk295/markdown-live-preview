@@ -100,15 +100,6 @@ function LoginPage() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        <div className="login-hint">
-          <p>Demo accounts:</p>
-          <ul>
-            <li>user1 / pass1</li>
-            <li>alice / alice123</li>
-            <li>bob / password123</li>
-          </ul>
-        </div>
       </div>
 
       <style>{`
