@@ -19,8 +19,10 @@ api.interceptors.response.use(
 
       // Handle 401 Unauthorized - redirect to login
       if (status === 401) {
-        // Only redirect if not already on login page
-        if (window.location.pathname !== '/') {
+        const pathname = window.location.pathname;
+        // Only redirect if not on login page or public pages
+        const isPublicPage = pathname === '/' || pathname.startsWith('/markdownpreview');
+        if (!isPublicPage) {
           window.location.href = '/';
         }
       }

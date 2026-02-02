@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import LibraryPage from './pages/LibraryPage';
 import UploadPage from './pages/UploadPage';
 import EditorPage from './pages/EditorPage';
+import PublicMarkdownPreview from './pages/PublicMarkdownPreview';
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
+            {/* Public markdown preview - no auth required */}
+            <Route path="/markdownpreview" element={<PublicMarkdownPreview />} />
+            <Route path="/markdownpreview/:shareId" element={<PublicMarkdownPreview />} />
             <Route
               path="/library"
               element={
