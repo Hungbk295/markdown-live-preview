@@ -18,7 +18,7 @@ function PublicMarkdownPreview() {
   const [shareStatus, setShareStatus] = useState(''); // '' | 'sharing' | 'shared' | 'error'
   const [sharedUrl, setSharedUrl] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
-  const [isSharedContent, setIsSharedContent] = useState(false);
+  const [currentShareId, setCurrentShareId] = useState(null); // Track current share ID
 
   // Load shared content if shareId exists
   useEffect(() => {
@@ -32,7 +32,8 @@ function PublicMarkdownPreview() {
       setLoading(true);
       const response = await api.get(`/public/share/${shareId}`);
       setContent(response.data.content);
-      setIsSharedContent(true);
+      setCurrentShareId(shareId); // Remember the share ID
+      setSharedUrl(`${window.location.origin}/markdownpreview/${shareId}`);
       setReadingMode(true); // Show reading mode for shared content
     } catch (error) {
       console.error('Error loading shared content:', error);
@@ -59,9 +60,19 @@ function PublicMarkdownPreview() {
 
     try {
       setShareStatus('sharing');
-      const response = await api.post('/public/share', { content });
 
-      const fullUrl = `${window.location.origin}${response.data.url}`;
+      let fullUrl;
+      if (currentShareId) {
+        // Update existing share
+        await api.put(`/public/share/${currentShareId}`, { content });
+        fullUrl = `${window.location.origin}/markdownpreview/${currentShareId}`;
+      } else {
+        // Create new share
+        const response = await api.post('/public/share', { content });
+        fullUrl = `${window.location.origin}${response.data.url}`;
+        setCurrentShareId(response.data.shareId);
+      }
+
       setSharedUrl(fullUrl);
       setShareStatus('shared');
       setShowShareModal(true);
