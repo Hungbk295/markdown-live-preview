@@ -19,6 +19,13 @@ function PublicMarkdownPreview() {
   const [sharedUrl, setSharedUrl] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
   const [currentShareId, setCurrentShareId] = useState(null); // Track current share ID
+  const [headerVisible, setHeaderVisible] = useState(true);
+
+  // Đơn giản: scroll > 100 thì ẩn header
+  const handleScroll = (e) => {
+    const scrollTop = e.target.scrollTop;
+    setHeaderVisible(scrollTop < 100);
+  };
 
   // Load shared content if shareId exists
   useEffect(() => {
@@ -124,8 +131,8 @@ function PublicMarkdownPreview() {
   }
 
   return (
-    <div className="editor-page">
-      <header className="editor-header">
+    <div className={`editor-page ${readingMode ? 'reading-mode-active' : ''}`}>
+      <header className={`editor-header ${!headerVisible && readingMode ? 'header-hidden' : ''}`}>
         <div className="header-left">
           <h1>Markdown Preview</h1>
           {/* Theme Selector */}
@@ -180,8 +187,8 @@ function PublicMarkdownPreview() {
       <div className="editor-container">
         {readingMode ? (
           // Reading Mode - only show preview
-          <div className="reading-mode-container">
-            <div className="preview-pane reading-preview">{renderPreview()}</div>
+          <div className="reading-mode-container" onScroll={handleScroll}>
+            <div className="reading-preview">{renderPreview()}</div>
           </div>
         ) : (
           // Edit Mode - show split pane
@@ -233,6 +240,22 @@ function PublicMarkdownPreview() {
           border-bottom: 1px solid var(--border-color, #ddd);
           flex-shrink: 0;
           gap: 0.5rem;
+          transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Fixed header in reading mode */
+        .reading-mode-active .editor-header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 100;
+        }
+
+        .editor-header.header-hidden {
+          transform: translateY(-100%);
+          opacity: 0;
+          pointer-events: none;
         }
 
         .header-left {
@@ -343,13 +366,23 @@ function PublicMarkdownPreview() {
         .editor-container {
           flex: 1;
           overflow: hidden;
+          position: relative;
         }
 
         /* Reading Mode */
         .reading-mode-container {
-          height: 100%;
-          overflow: auto;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
           background: var(--preview-bg, #fff);
+        }
+
+        .reading-mode-active .reading-mode-container {
+          padding-top: 60px; /* Space for fixed header */
         }
 
         .reading-preview {

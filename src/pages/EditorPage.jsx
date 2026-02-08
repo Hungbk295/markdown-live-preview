@@ -24,7 +24,6 @@ function EditorPage() {
   // Đơn giản: scroll > 100 thì ẩn header
   const handleScroll = (e) => {
     const scrollTop = e.target.scrollTop;
-    console.log('SCROLL:', scrollTop); // DEBUG
     setHeaderVisible(scrollTop < 100);
   };
 
