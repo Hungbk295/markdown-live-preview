@@ -69,6 +69,55 @@ router.post('/share', async (req, res) => {
   }
 });
 
+// GET /api/public/shares - List all shared markdowns
+router.get('/shares', async (req, res) => {
+  try {
+    await ensurePublicBookDir();
+
+    const files = await fs.readdir(PUBLIC_BOOK_DIR);
+    const shares = [];
+
+    for (const file of files) {
+      if (file.endsWith('.md')) {
+        const shareId = file.replace('.md', '');
+        const filePath = path.join(PUBLIC_BOOK_DIR, file);
+        const stat = await fs.stat(filePath);
+        const content = await fs.readFile(filePath, 'utf-8');
+
+        // Extract title from first heading or first line
+        const lines = content.split('\n');
+        let title = shareId;
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('# ')) {
+            title = trimmed.replace(/^#+\s*/, '');
+            break;
+          } else if (trimmed && !trimmed.startsWith('#')) {
+            title = trimmed.substring(0, 50) + (trimmed.length > 50 ? '...' : '');
+            break;
+          }
+        }
+
+        shares.push({
+          shareId,
+          title,
+          createdAt: stat.birthtime,
+          updatedAt: stat.mtime,
+          size: stat.size
+        });
+      }
+    }
+
+    // Sort by updated date descending
+    shares.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    res.json(shares);
+  } catch (error) {
+    console.error('Error listing shared markdowns:', error);
+    res.status(500).json({ error: 'Failed to list shared markdowns' });
+  }
+});
+
 // GET /api/public/share/:shareId - Get shared markdown content
 router.get('/share/:shareId', async (req, res) => {
   try {
