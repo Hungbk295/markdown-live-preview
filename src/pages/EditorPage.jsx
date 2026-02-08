@@ -18,7 +18,15 @@ function EditorPage() {
   const [saveStatus, setSaveStatus] = useState(''); // 'saving' | 'saved' | 'error'
   const [readingMode, setReadingMode] = useState(true); // Default: reading mode (ẩn editor)
   const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
   const saveTimeoutRef = useRef(null);
+
+  // Đơn giản: scroll > 100 thì ẩn header
+  const handleScroll = (e) => {
+    const scrollTop = e.target.scrollTop;
+    console.log('SCROLL:', scrollTop); // DEBUG
+    setHeaderVisible(scrollTop < 100);
+  };
 
   // API path depends on whether book is in folder or not
   const getApiPath = () => {
@@ -105,8 +113,8 @@ function EditorPage() {
   }
 
   return (
-    <div className="editor-page">
-      <header className="editor-header">
+    <div className={`editor-page ${readingMode ? 'reading-mode-active' : ''}`}>
+      <header className={`editor-header ${!headerVisible && readingMode ? 'header-hidden' : ''}`}>
         <div className="header-left">
           <button onClick={() => navigate('/library')} className="btn-back">
             ←
@@ -160,8 +168,8 @@ function EditorPage() {
       <div className="editor-container">
         {readingMode ? (
           // Reading Mode - chỉ hiển thị preview
-          <div className="reading-mode-container">
-            <div className="preview-pane reading-preview">{renderPreview()}</div>
+          <div className="reading-mode-container" onScroll={handleScroll}>
+            <div className="reading-preview">{renderPreview()}</div>
           </div>
         ) : (
           // Edit Mode - hiển thị split pane
@@ -189,6 +197,22 @@ function EditorPage() {
           border-bottom: 1px solid var(--border-color, #ddd);
           flex-shrink: 0;
           gap: 0.5rem;
+          transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Fixed header in reading mode */
+        .reading-mode-active .editor-header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 100;
+        }
+
+        .editor-header.header-hidden {
+          transform: translateY(-100%);
+          opacity: 0;
+          pointer-events: none;
         }
 
         .header-left {
@@ -312,12 +336,22 @@ function EditorPage() {
         .editor-container {
           flex: 1;
           overflow: hidden;
+          position: relative;
+        }
+
+        .reading-mode-active .reading-mode-container {
+          padding-top: 60px; /* Space for fixed header */
         }
 
         /* Reading Mode */
         .reading-mode-container {
-          height: 100%;
-          overflow: auto;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
           background: var(--preview-bg, #fff);
         }
 
