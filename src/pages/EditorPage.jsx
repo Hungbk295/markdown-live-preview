@@ -19,6 +19,7 @@ function EditorPage() {
   const [readingMode, setReadingMode] = useState(true); // Default: reading mode (ẩn editor)
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [copyStatus, setCopyStatus] = useState('');
   const saveTimeoutRef = useRef(null);
 
   // Đơn giản: scroll > 100 thì ẩn header
@@ -87,6 +88,18 @@ function EditorPage() {
     }, 1000);
   };
 
+  const handleCopyContent = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopyStatus('copied');
+      setTimeout(() => setCopyStatus(''), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      setCopyStatus('error');
+      setTimeout(() => setCopyStatus(''), 2000);
+    }
+  };
+
   const renderPreview = () => {
     if (!content) {
       return <div className="preview-empty">Start typing to see preview...</div>;
@@ -152,6 +165,15 @@ function EditorPage() {
             {saveStatus === 'saved' && <span className="status-saved">✓ Saved</span>}
             {saveStatus === 'error' && <span className="status-error">Error saving</span>}
           </div>
+
+          {/* Copy Button */}
+          <button
+            onClick={handleCopyContent}
+            className="btn-copy-content"
+            title="Copy all markdown content"
+          >
+            {copyStatus === 'copied' ? '✓ Copied' : '📋 Copy'}
+          </button>
 
           {/* Reading Mode Toggle */}
           <button
@@ -249,7 +271,7 @@ function EditorPage() {
           transition: all 0.2s;
         }
 
-        .btn-toggle-mode, .btn-theme {
+        .btn-toggle-mode, .btn-theme, .btn-copy-content {
           padding: 0.5rem 1rem;
           background: var(--button-bg, #fff);
           border: 1px solid var(--border-color, #ddd);
@@ -260,7 +282,7 @@ function EditorPage() {
           transition: all 0.2s;
         }
 
-        .btn-back:hover, .btn-toggle-mode:hover, .btn-theme:hover {
+        .btn-back:hover, .btn-toggle-mode:hover, .btn-theme:hover, .btn-copy-content:hover {
           background: var(--button-hover, #e9ecef);
         }
 
@@ -828,7 +850,8 @@ function EditorPage() {
 
           .btn-back,
           .btn-toggle-mode,
-          .btn-theme {
+          .btn-theme,
+          .btn-copy-content {
             padding: 0.35rem 0.5rem;
             font-size: 0.8rem;
           }

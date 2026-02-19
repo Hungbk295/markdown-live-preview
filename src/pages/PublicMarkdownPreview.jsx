@@ -20,6 +20,7 @@ function PublicMarkdownPreview() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [currentShareId, setCurrentShareId] = useState(null); // Track current share ID
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [contentCopyStatus, setContentCopyStatus] = useState('');
 
   // Đơn giản: scroll > 100 thì ẩn header
   const handleScroll = (e) => {
@@ -106,6 +107,18 @@ function PublicMarkdownPreview() {
     }
   };
 
+  const handleCopyContent = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setContentCopyStatus('copied');
+      setTimeout(() => setContentCopyStatus(''), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      setContentCopyStatus('error');
+      setTimeout(() => setContentCopyStatus(''), 2000);
+    }
+  };
+
   const renderPreview = () => {
     if (!content) {
       return <div className="preview-empty">Start typing to see preview...</div>;
@@ -163,6 +176,15 @@ function PublicMarkdownPreview() {
           </div>
         </div>
         <div className="header-right">
+          {/* Copy Content Button */}
+          <button
+            onClick={handleCopyContent}
+            className="btn-copy-content"
+            title="Copy markdown content"
+          >
+            {contentCopyStatus === 'copied' ? '✓ Copied' : '📋 Copy'}
+          </button>
+
           {/* Reading Mode Toggle */}
           <button
             onClick={() => setReadingMode(!readingMode)}
@@ -282,7 +304,7 @@ function PublicMarkdownPreview() {
           flex-shrink: 0;
         }
 
-        .btn-toggle-mode, .btn-theme, .btn-share {
+        .btn-toggle-mode, .btn-theme, .btn-share, .btn-copy-content {
           padding: 0.5rem 1rem;
           background: var(--button-bg, #fff);
           border: 1px solid var(--border-color, #ddd);
@@ -293,7 +315,7 @@ function PublicMarkdownPreview() {
           transition: all 0.2s;
         }
 
-        .btn-toggle-mode:hover, .btn-theme:hover, .btn-share:hover {
+        .btn-toggle-mode:hover, .btn-theme:hover, .btn-share:hover, .btn-copy-content:hover {
           background: var(--button-hover, #e9ecef);
         }
 
@@ -935,7 +957,8 @@ function PublicMarkdownPreview() {
 
           .btn-toggle-mode,
           .btn-share,
-          .btn-theme {
+          .btn-theme,
+          .btn-copy-content {
             padding: 0.35rem 0.5rem;
             font-size: 0.8rem;
           }
