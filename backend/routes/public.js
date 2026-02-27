@@ -145,6 +145,33 @@ router.get('/share/:shareId', async (req, res) => {
   }
 });
 
+// DELETE /api/public/share/:shareId - Delete shared markdown
+router.delete('/share/:shareId', async (req, res) => {
+  try {
+    const { shareId } = req.params;
+
+    if (!/^[a-f0-9]{6}$/i.test(shareId)) {
+      return res.status(400).json({ error: 'Invalid share ID format' });
+    }
+
+    const filePath = path.join(PUBLIC_BOOK_DIR, `${shareId}.md`);
+
+    try {
+      await fs.unlink(filePath);
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        return res.status(404).json({ error: 'Shared markdown not found' });
+      }
+      throw error;
+    }
+
+    res.json({ success: true, shareId });
+  } catch (error) {
+    console.error('Error deleting shared markdown:', error);
+    res.status(500).json({ error: 'Failed to delete shared markdown' });
+  }
+});
+
 // PUT /api/public/share/:shareId - Update shared markdown content
 router.put('/share/:shareId', async (req, res) => {
   try {
