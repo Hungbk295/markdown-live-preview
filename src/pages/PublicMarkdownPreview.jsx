@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import MarkdownEditor from '../components/MarkdownEditor';
 import SplitPane from '../components/SplitPane';
 import api from '../services/api';
+import { extractDrawIds, embedDrawings } from '../utils/drawRenderer';
 
 function PublicMarkdownPreview() {
   const { shareId } = useParams();
@@ -21,6 +22,30 @@ function PublicMarkdownPreview() {
   const [currentShareId, setCurrentShareId] = useState(null); // Track current share ID
   const [headerVisible, setHeaderVisible] = useState(true);
   const [contentCopyStatus, setContentCopyStatus] = useState('');
+  const [drawingsMap, setDrawingsMap] = useState({});
+
+  // Fetch referenced drawings when content changes
+  const fetchDrawings = useCallback(async (markdown) => {
+    const drawIds = extractDrawIds(markdown);
+    if (drawIds.length === 0) return;
+
+    const newMap = {};
+    await Promise.all(
+      drawIds.map(async (id) => {
+        try {
+          const res = await api.get(`/draw/${id}`);
+          newMap[id] = res.data;
+        } catch {
+          newMap[id] = null;
+        }
+      })
+    );
+    setDrawingsMap(prev => ({ ...prev, ...newMap }));
+  }, []);
+
+  useEffect(() => {
+    if (content) fetchDrawings(content);
+  }, [content, fetchDrawings]);
 
   // Đơn giản: scroll > 100 thì ẩn header
   const handleScroll = (e) => {
@@ -124,8 +149,18 @@ function PublicMarkdownPreview() {
       return <div className="preview-empty">Start typing to see preview...</div>;
     }
 
-    const html = marked.parse(content);
-    const sanitized = DOMPurify.sanitize(html);
+    let html = marked.parse(content);
+
+    // Embed draw diagrams inline (before sanitization)
+    if (Object.keys(drawingsMap).length > 0) {
+      html = embedDrawings(html, drawingsMap);
+    }
+
+    // Allow SVG elements through DOMPurify for inline drawings
+    const sanitized = DOMPurify.sanitize(html, {
+      ADD_TAGS: ['svg', 'rect', 'ellipse', 'polygon', 'polyline', 'path', 'text', 'style', 'line', 'circle', 'g', 'defs'],
+      ADD_ATTR: ['viewBox', 'xmlns', 'fill', 'stroke', 'stroke-width', 'opacity', 'cx', 'cy', 'rx', 'ry', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'd', 'points', 'font-size', 'font-family', 'text-anchor', 'transform', 'r'],
+    });
 
     return (
       <div
@@ -529,6 +564,64 @@ function PublicMarkdownPreview() {
 
         .btn-close-modal:hover {
           background: var(--button-hover, #e9ecef);
+        }
+
+        /* Draw Embeds */
+        .draw-embed {
+          margin: 1.5rem 0;
+          border: 1px solid var(--border-color, #e0e0e0);
+          border-radius: 8px;
+          overflow: hidden;
+          background: #fafafa;
+        }
+
+        .draw-embed-content {
+          padding: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 200px;
+        }
+
+        .draw-embed-content svg {
+          max-width: 100%;
+          height: auto;
+        }
+
+        .draw-embed-caption {
+          padding: 8px 16px;
+          font-size: 0.85rem;
+          color: var(--text-secondary, #666);
+          border-top: 1px solid var(--border-color, #e0e0e0);
+          background: var(--header-bg, #f5f5f5);
+          text-align: center;
+          font-style: italic;
+        }
+
+        .draw-embed.draw-error {
+          border-color: #e03131;
+          background: #fff5f5;
+        }
+
+        .draw-embed.draw-error p {
+          color: #e03131;
+          text-align: center;
+          padding: 1rem;
+          margin: 0;
+        }
+
+        [data-theme="dark"] .draw-embed {
+          background: #252525;
+          border-color: #444;
+        }
+
+        [data-theme="dark"] .draw-embed-caption {
+          background: #2d2d2d;
+          border-color: #444;
+        }
+
+        [data-theme="dark"] .draw-embed-content svg text {
+          fill: #e0e0e0;
         }
 
         /* Light Theme (Default) */

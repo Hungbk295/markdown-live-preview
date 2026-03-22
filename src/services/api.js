@@ -21,7 +21,7 @@ api.interceptors.response.use(
       if (status === 401) {
         const pathname = window.location.pathname;
         // Only redirect if not on login page or public pages
-        const isPublicPage = pathname === '/' || pathname.startsWith('/markdownpreview');
+        const isPublicPage = pathname === '/' || pathname.startsWith('/markdownpreview') || pathname.startsWith('/draw');
         if (!isPublicPage) {
           window.location.href = '/';
         }

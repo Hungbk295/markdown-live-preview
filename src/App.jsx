@@ -8,6 +8,8 @@ import UploadPage from './pages/UploadPage';
 import EditorPage from './pages/EditorPage';
 import PublicMarkdownPreview from './pages/PublicMarkdownPreview';
 import PublicSharesListPage from './pages/PublicSharesListPage';
+import DrawListPage from './pages/DrawListPage';
+import DrawViewPage from './pages/DrawViewPage';
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
             <Route path="/markdownpreview" element={<PublicMarkdownPreview />} />
             <Route path="/markdownpreview/all" element={<PublicSharesListPage />} />
             <Route path="/markdownpreview/:shareId" element={<PublicMarkdownPreview />} />
+            {/* Excalidraw drawings - no auth required */}
+            <Route path="/draw/all" element={<DrawListPage />} />
+            <Route path="/draw/:drawId" element={<DrawViewPage />} />
             <Route
               path="/library"
               element={
